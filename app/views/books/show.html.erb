@@ -1,0 +1,39 @@
+<div class="container mt-4">
+  <div class="row">
+    <!-- 左側のカラム -->
+    <div class="col-md-3">
+      <!-- 他人のユーザー情報を表示する場合 -->
+<%= render partial: 'shared/user_info', locals: { user: @user } %>
+    <%= render 'shared/new_book', book: @book %>
+</div>
+<!-- 右側のカラム -->
+<div class="col-md-8 offset-md-1">
+  <h2>Book detail</h2>
+
+  <table class="table">
+    <tbody>
+      <tr>
+        <td>
+          <% if @book.user.profile_image.attached? %>
+            <%= image_tag @book.user.profile_image, alt: "User Image", class: "img-thumbnail", size: "100x100" %>
+          <% else %>
+            <%= image_tag 'no_image.jpg', alt: "No Image", class: "img-thumbnail", size: "100x100" %>
+          <% end %>
+          <div class="mt-2">
+            <%= link_to @book.user.name, user_path(@book.user) %>
+          </div>
+        </td>
+        <td><%= @book.title %></td>
+        <td><%= @book.body %></td>
+
+         <% if current_user == @book.user %>
+        <td><%= link_to 'Edit', edit_book_path(@book), class: "btn btn-success" %></td>
+        <td><%= link_to 'Destroy', book_path(@book), method: :delete, data: { confirm: '本当に削除しますか?' }, class: "btn btn-danger" %></td>
+        <% else %>
+       <% end %>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+</div>

@@ -1,0 +1,29 @@
+class ApplicationController < ActionController::Base
+   before_action :authenticate_user!, except: [:top,:about]
+  before_action :configure_permitted_parameters, if: :devise_controller?
+
+protected
+
+def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:name,:email])
+    devise_parameter_sanitizer.permit(:sign_in, keys: [:name])
+end
+
+ # 新規登録後のリダイレクト先
+  def after_sign_up_path_for(resource)
+    flash[:notice] = "Welcome! You have signed up successfully."
+    user_path(resource)
+  end
+
+# ログイン後のリダイレクト先
+  def after_sign_in_path_for(resource)
+    flash[:notice] = "Signed in successfully."  # フラッシュメッセージの設定
+    user_path(resource)  # ログイン後に移動するパス
+  end
+
+# ログアウト後のリダイレクト先
+  def after_sign_out_path_for(_resource_or_scope)
+    root_path
+  end
+
+end

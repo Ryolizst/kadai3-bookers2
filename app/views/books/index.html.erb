@@ -1,0 +1,54 @@
+<div class="container mt-4">
+
+    <!-- エラーメッセージを表示 -->
+<% if @book.errors.any? %>
+  <h4><%= pluralize(@book.errors.count, "error") %> prohibited this book from being saved:</h4>
+  <ul>
+    <% @book.errors.full_messages.each do |message| %>
+      <li><%= message %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+  <div class="row">
+    <!-- 左側のカラム 部分レイアウト化-->
+     <div class="col-md-3">
+    <%= render 'shared/user_info', user: current_user %>
+    <%= render 'shared/new_book', book: @book %>
+</div>
+
+    <!-- 右側のカラム -->
+    <div class="col-md-8 offset-md-1">
+      <h2>Books</h2>
+      <!-- Bookのリストを表示 -->
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Profile Image</th>
+            <th>Title</th>
+            <th>Opinion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @books.each do |book| %>
+            <tr>
+              <td>
+    <% if book.user.profile_image.attached? %>
+    <%= link_to user_path(book.user) do %>
+      <%= image_tag book.user.profile_image, alt: "Profile Image", class: "img-thumbnail", size: "100x100" %>
+    <% end %>
+  <% else %>
+    <%= link_to user_path(book.user) do %>
+      <%= image_tag 'no_image.jpg', alt: "No Image", class: "img-thumbnail", size: "100x100" %>
+    <% end %>
+  <% end %>
+ </td>
+          <td><%= link_to book.title, book_path(book) %></td>
+          <td><%= book.body %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+ </div>
+</div>
