@@ -5,9 +5,6 @@ rails db:migrate
 
 2. モデルの関連付け
 各モデルに必要な関連付け
-2. モデルの関連付け
-各モデルに必要な関連付けを追加します。
-
 app/models/comment.rb
 class Comment < ApplicationRecord
   belongs_to :user
@@ -106,8 +103,6 @@ rails g model Favorite user_id:integer post_image_id:integer
 
 モデルでの関連付け
 Favoriteモデル:
-ruby
-コードをコピーする
 class Favorite < ApplicationRecord
   belongs_to :user
   belongs_to :post_image
@@ -116,7 +111,7 @@ class Favorite < ApplicationRecord
 end
 
 2.Routing
-#resource :favorite, only: [:create, :destroy]がいる。
+#resource :favorite, only: [:create, :destroy]
 Rails.application.routes.draw do
   devise_for :users
   root to: "homes#top"
