@@ -6,6 +6,9 @@ Rails.application.routes.draw do
   get 'home/about', to: 'homes#about', as: 'about'
 
   # リソースルーティング
-  resources :books
-  resources :users, only: [:index, :show, :edit, :update]
+  resources :books do
+  resources :comments, only: [:create, :destroy]
+  resource :favorite, only: [:create, :destroy]
+end
+    resources :users, only: [:index, :show, :edit, :update]
 end

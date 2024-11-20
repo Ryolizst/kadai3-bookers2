@@ -1,0 +1,146 @@
+コメント機能実装
+1.モデル作成
+rails g model Comment comment:text user_id:integer book_id:integer
+rails db:migrate
+
+2. モデルの関連付け
+各モデルに必要な関連付け
+2. モデルの関連付け
+各モデルに必要な関連付けを追加します。
+
+app/models/comment.rb
+class Comment < ApplicationRecord
+  belongs_to :user
+  belongs_to :book
+end
+
+
+app/models/user.rb
+class User < ApplicationRecord
+  # 既存の関連付け
+  has_many :comments, dependent: :destroy
+end
+
+app/models/book.rb
+class Book < ApplicationRecord
+  # 既存の関連付け
+  has_many :comments, dependent: :destroy
+end
+
+3. ルーティング設定
+Rails.application.routes.draw do
+  devise_for :users
+  root to: "homes#top"
+  resources :books do
+    resources :comments, only: [:create, :destroy]
+  end
+  resources :users, only: [:show, :edit, :update, :index]
+end
+
+4. コントローラ作成
+rails g controller comments
+
+app/controllers/comments_controller.rb
+class CommentsController < ApplicationController
+  def create
+    book = Book.find(params[:book_id])
+    comment = current_user.comments.new(comment_params)
+    comment.book_id = book.id
+    if comment.save
+      redirect_to book_path(book)
+    else
+      render 'books/show'
+    end
+  end
+
+  def destroy
+    Comment.find(params[:id]).destroy
+    redirect_to book_path(params[:book_id])
+  end
+
+  private
+
+  def comment_params
+    params.require(:comment).permit(:comment)
+  end
+end
+
+5. ビューの修正
+app/views/books/show.html.erb
+<div>
+  <p>コメント件数：<%= @book.comments.count %></p>
+  <% @book.comments.each do |comment| %>
+    <p><%= image_tag comment.user.profile_image %></p>
+    <p><%= comment.user.name %> - <%= comment.created_at.strftime('%Y/%m/%d') %></p>
+    <p><%= comment.comment %></p>
+    <% if comment.user == current_user %>
+      <%= link_to '削除', book_comment_path(comment.book, comment), method: :delete %>
+    <% end %>
+  <% end %>
+</div>
+
+<div>
+  <%= form_with model: [@book, @book.comments.build] do |f| %>
+    <%= f.text_area :comment, rows: '3', placeholder: 'コメントを入力してください' %>
+    <%= f.submit '送信' %>
+  <% end %>
+</div>
+
+6. BooksControllerの修正？？
+app/controllers/books_controller.rb
+
+def show
+  @book = Book.find(params[:id])
+  @comment = Comment.new
+end
+
+
+
+
+Favorite
+1.モデル作成
+id	integer	主キー、自動生成されるID
+user_id	integer	「いいね」したユーザのID
+post_image_id	integer	「いいね」された投稿画像のID
+rails g model Favorite user_id:integer post_image_id:integer
+
+モデルでの関連付け
+Favoriteモデル:
+ruby
+コードをコピーする
+class Favorite < ApplicationRecord
+  belongs_to :user
+  belongs_to :post_image
+
+  validates :user_id, uniqueness: { scope: :post_image_id }
+end
+
+2.Routing
+#resource :favorite, only: [:create, :destroy]がいる。
+Rails.application.routes.draw do
+  devise_for :users
+  root to: "homes#top"
+  get "/about" => "homes#about", as: "about"
+
+  resources :books do
+    resource :favorite, only: [:create, :destroy]
+  end
+
+  resources :users, only: [:show, :edit, :update, :index]
+end
+
+
+3.View ハート
+<% if @post_image.favorited_by?(current_user) %>
+    <p>
+      <%= link_to post_image_favorite_path(@post_image), method: :delete do %>
+        ♥<%= @post_image.favorites.count %> いいね
+      <% end %>
+    </p>
+    <% else %>
+    <p>
+      <%= link_to post_image_favorite_path(@post_image), method: :post do %>
+        ♡<%= @post_image.favorites.count %> いいね
+      <% end %>
+    </p>
+  <% end %>

@@ -13,4 +13,11 @@ class User < ApplicationRecord
 
   # Userモデルとの関連付け（N対1）
   has_many :books, dependent: :destroy
+
+   # コメントの関連付けを追加
+  has_many :comments, dependent: :destroy
+
+# いいね機能の関連付けを追加
+  has_many :favorites, dependent: :destroy
+
 end

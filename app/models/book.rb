@@ -6,4 +6,14 @@ class Book < ApplicationRecord
   validates :title, presence: true
   validates :body, presence: true, length: { maximum: 200 }
 
+ # コメントの関連付けを追加
+  has_many :comments, dependent: :destroy
+
+   # いいね機能の関連付けを追加
+  has_many :favorites, dependent: :destroy
+
+  # ユーザーがこの本をすでに「いいね」しているかを判定するメソッド
+  def favorited_by?(user)
+    favorites.exists?(user_id: user.id)
+  end
 end

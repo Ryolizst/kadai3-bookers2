@@ -2,7 +2,7 @@ class BooksController < ApplicationController
      before_action :authenticate_user!
      #投稿の編集・削除を投稿者のみ
      before_action :correct_user, only: [:edit, :update, :destroy]
-   
+
    def index
     @book = Book.new
     @books = Book.all
@@ -25,6 +25,7 @@ end
 def show
   @book = Book.find(params[:id])
   @user = @book.user#テスト追加
+   @comment = Comment.new
 end
 
 def edit
